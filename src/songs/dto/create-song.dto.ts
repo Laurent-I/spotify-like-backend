@@ -1,4 +1,4 @@
-import { IsString, IsArray, IsNotEmpty, IsDateString, IsMilitaryTime } from 'class-validator';
+import { IsString, IsArray, IsNotEmpty, IsDateString, IsMilitaryTime, IsOptional } from 'class-validator';
 
 export class CreateSongDto {
   @IsString()
@@ -17,4 +17,8 @@ export class CreateSongDto {
   @IsNotEmpty()
   @IsDateString()
   readonly releasedDate: Date;
+
+  @IsString()
+  @IsOptional()
+  readonly lyrics: string;
 }
