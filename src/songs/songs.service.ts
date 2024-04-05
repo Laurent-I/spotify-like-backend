@@ -1,15 +1,18 @@
 import { DefaultValuePipe, Injectable, ParseIntPipe, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Song } from 'src/entities/song.entity';
-import { Repository, UpdateResult } from 'typeorm';
+import { In, Repository, UpdateResult } from 'typeorm';
 import { CreateSongDto } from './dto/create-song.dto';
 import { UpdateSongDto } from './dto/update-song.dto';
 import { IPaginationOptions, Pagination, paginate } from 'nestjs-typeorm-paginate';
+import { Artist } from 'src/entities/artist.entity';
 
 @Injectable()
 export class SongsService {
     songsService: any;
-    constructor(@InjectRepository(Song) private songRepository: Repository<Song>) {
+    constructor(@InjectRepository(Song) private songRepository: Repository<Song>, 
+    @InjectRepository(Artist) private artistRepository : Repository<Artist>,
+) {
     }
 
     async create(songDTO: CreateSongDto): Promise<Song>{
@@ -19,6 +22,10 @@ export class SongsService {
         song.duration = songDTO.duration;
         song.releasedDate = songDTO.releasedDate;
         song.lyrics = songDTO.lyrics;
+        
+        const artists = await this.artistRepository.findBy({id: In(songDTO.artists)});
+        song.artists = artists;
+
         return await this.songRepository.save(song);
     }
 
