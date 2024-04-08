@@ -15,7 +15,7 @@ export class SongsController {
         try {
             return this.songsService.findAll() 
         } catch (error) {
-            throw new HttpException('server error', HttpStatus.INTERNAL_SERVER_ERROR, {cause: error.message})
+            throw new Error(error)
         }
     }
 

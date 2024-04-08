@@ -9,7 +9,7 @@ import { Artist } from 'src/entities/artist.entity';
 
 @Injectable()
 export class SongsService {
-    songsService: any;
+    
     constructor(@InjectRepository(Song) private songRepository: Repository<Song>, 
     @InjectRepository(Artist) private artistRepository : Repository<Artist>,
 ) {
@@ -28,13 +28,18 @@ export class SongsService {
 
         return await this.songRepository.save(song);
     }
+     async paginate(options: IPaginationOptions) :Promise<Pagination<Song>> {
+        const queryBuilder = this.songRepository.createQueryBuilder('c')
+        queryBuilder.orderBy('c.releasedDate', 'DESC');
+        return await paginate<Song>(this.songRepository, options);
+    }
 
     findAll(
         @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
         @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
     ): Promise<Pagination<Song>> {
         limit = limit >100 ? 100 : limit;
-        return this.songsService.paginate({
+        return this.paginate({
             page,limit
         })
     }
@@ -51,10 +56,5 @@ export class SongsService {
         return await this.songRepository.update(id, recordToUpdate);
     }
 
-    async paginate(options: IPaginationOptions) :Promise<Pagination<Song>> {
-        const queryBuilder = this.songRepository.createQueryBuilder('c')
-        queryBuilder.orderBy('c.releasedDate', 'DESC');
-        return paginate<Song>(this.songRepository, options);
-    }
 
 }
